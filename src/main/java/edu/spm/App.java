@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.crypto.interfaces.DHPrivateKey;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -26,110 +28,182 @@ public class App
     {
         FileRepository instance = FileRepository.getInstance();
         try {
-            ConsoleHandler.printMessage( "Welcome to the console application! Choose the menu from the following options \n" +
+            printMessage( "Welcome to the console application! Choose the menu from the following options \n" +
              "1 . Read the File \n" + 
              "2 . Edit items to the file \n" +
              "3 . Add items to the file \n" +
              "4 . Delete items to the file\n" +
              "5 . Analysis of the data\n" +
              "6 . Filter data\n");
-            String menuOption = ConsoleHandler.readMenuOption();
+            String menuOption = readMenuOption();
             switch (menuOption) {
                 case "1":
                     Map<String, ForestFire> forestFires = instance.getForestFires();
-                    ConsoleHandler.displayData(forestFires);
+                    displayData(forestFires);
                     break;
                 case "2": 
 
-                    ConsoleHandler.printMessage("Enter the ID for the record you want to edit : ");
-                    String id = ConsoleHandler.readId();
+                    printMessage("Enter the ID for the record you want to edit : ");
+                    String id = readId();
                     ForestFire existingForestFires = instance.getRecordForId(id);
-                    ConsoleHandler.printMessage("This is the existing record for the id: " + id);
-                    ConsoleHandler.displayData(existingForestFires);
-                    ConsoleHandler.printMessage("Enter the updated record in the order Month  Day  RH for the id: " + id + " and press enter");
-                    ConsoleHandler.printMessage("Example : jan sun 25 ");
-                    ForestFire newff = ConsoleHandler.readForestFireInput(existingForestFires);
+                    printMessage("This is the existing record for the id: " + id);
+                    displayData(existingForestFires);
+                    printMessage("Enter the updated record in the order Month  Day  RH for the id: " + id + " and press enter");
+                    printMessage("Example : jan sun 25 ");
+                    ForestFire newff = readForestFireInput(existingForestFires);
                     Boolean result = FileRepository.INSTANCE.update(newff);
                     if (result) {
-                        ConsoleHandler.printMessage("Update sucessful for id: " + id);
+                        printMessage("Update sucessful for id: " + id);
                     } else {
-                        ConsoleHandler.printMessage("Update Failed for id: " + id);
+                        printMessage("Update Failed for id: " + id);
                     }
                     break;
                 case "3":
-                    ConsoleHandler.printMessage("Enter id month day RH separated by space like: 31 jan mon 54");
-                    newff = ConsoleHandler.readNewInput();
+                    printMessage("Enter id month day RH separated by space like: 31 jan mon 54");
+                    newff = readNewInput();
                     result = FileRepository.INSTANCE.add(newff);
                     if (result) {
-                        ConsoleHandler.printMessage("New record added");
+                        printMessage("New record added");
                     } else {
-                        ConsoleHandler.printMessage("Adding new record failed . Try different id");
+                        printMessage("Adding new record failed . Try different id");
                     }
                     break;
                  case "4":
-                    ConsoleHandler.printMessage("Enter id of the record which should be deleted");
-                    id = ConsoleHandler.readId();
+                    printMessage("Enter id of the record which should be deleted");
+                    id = readId();
                     existingForestFires = instance.getRecordForId(id);
-                    ConsoleHandler.printMessage("This is the existing record for the id: " + id);
-                    ConsoleHandler.displayData(existingForestFires);
-                    ConsoleHandler.printMessage("Are you sure you want to delete this? : Reply Y / N");
-                    String option = ConsoleHandler.readSingleInput();
+                    printMessage("This is the existing record for the id: " + id);
+                    displayData(existingForestFires);
+                    printMessage("Are you sure you want to delete this? : Reply Y / N");
+                    String option = readSingleInput();
                     if (option.equalsIgnoreCase("Y")) {
                         result = FileRepository.INSTANCE.delete(id);
                         if (result) {
-                            ConsoleHandler.printMessage("Deleted record with id: " + id);
+                            printMessage("Deleted record with id: " + id);
                         } else {
-                            ConsoleHandler.printMessage("Deleted record failed. Try different id");
+                            printMessage("Deleted record failed. Try different id");
                         }
 
                     } else {
-                        ConsoleHandler.printMessage("Delete operation terminated");
+                        printMessage("Delete operation terminated");
                         
                     }
                     break;
                 case "5": 
                    Pair<Double, Double> stats =  Dataprocess.getAnalysis(instance.getForestFires());
-                   ConsoleHandler.printMessage("Mean of RH: " + stats.getLeft());
-                   ConsoleHandler.printMessage("Median of RH : " + stats.getRight());
+                   printMessage("Mean of RH: " + stats.getLeft());
+                   printMessage("Median of RH : " + stats.getRight());
 
                     break;
 
                 case "6":
-                    ConsoleHandler.printMessage("On which fields do you want to filter the data?");
-                    ConsoleHandler.printMessage("1. RH \n " +                
+                    printMessage("On which fields do you want to filter the data?");
+                    printMessage("1. RH \n " +                
                     "2. Month \n" );
-                    String filterOption = ConsoleHandler.readMenuOption();
+                    String filterOption = readMenuOption();
                     if (filterOption.equalsIgnoreCase("1")) {
-                        ConsoleHandler.printMessage("Choose the operation: \n 1. > \n" + "2. < \n" );
-                        String operation = ConsoleHandler.readMenuOption();
-                        ConsoleHandler.printMessage("Enter " + " filter value: ( Should numeric)" );
-                        String filterValue = ConsoleHandler.readMenuOption();
+                        printMessage("Choose the operation: \n 1. > \n" + "2. < \n" );
+                        String operation = readMenuOption();
+                        printMessage("Enter " + " filter value: ( Should numeric)" );
+                        String filterValue = readMenuOption();
                         try {
                             List<ForestFire> ff = Dataprocess.filterByRh(operation, filterValue, instance.getForestFires());
-                            ConsoleHandler.displayData(ff);
+                            displayData(ff);
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
-                            ConsoleHandler.printMessage("Invalid Option" );
+                            printMessage("Invalid Option" );
                         }
                     } else if (filterOption.equalsIgnoreCase("2")) {
-                        ConsoleHandler.printMessage("Enter month for filtering value" );
-                        String month = ConsoleHandler.readMenuOption();
+                        printMessage("Enter month for filtering value" );
+                        String month = readMenuOption();
                         List<ForestFire> ff = Dataprocess.filterByMonth(month, instance.getForestFires());
                         if (ff.size() == 0) {
-                            ConsoleHandler.printMessage("There are no values to display " );
+                            printMessage("There are no values to display " );
                         }
-                        ConsoleHandler.displayData(ff);
+                        displayData(ff);
                     } else {
-                        ConsoleHandler.printMessage("Invalid Option" );
+                        printMessage("Invalid Option" );
                     }
                     break;
                 default:
-                    ConsoleHandler.printMessage("Invalid Option" );
+                    printMessage("Invalid Option" );
                     break;
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
            System.out.println(ExceptionUtils.getStackTrace(e)); 
         }
+    }
+
+
+    private static String readCommandLineArguments() throws IOException {
+
+        Scanner reader = new Scanner(System.in);
+        String line = reader.nextLine();
+        return line;
+       
+    }
+
+    private static ForestFire parseInput(String line) {
+        String[] tokens = StringUtils.splitPreserveAllTokens(line, StringUtils.SPACE);
+        ForestFire ff = new ForestFire(tokens[0], tokens[1], tokens[2], tokens[3]);
+        return ff;
+    }
+
+    public static String readSingleInput() throws IOException {
+        String line = readCommandLineArguments();
+        return line;
+    }
+    public static String readMenuOption() throws IOException {
+       return readSingleInput();
+    }
+    public static String readId() throws IOException {
+        return readSingleInput();
+    }
+ 
+    public static void printMessage( String line) {
+        System.out.println(line);
+    }
+
+    public static void displayData(Map<String,ForestFire> forestFires) {
+       
+        for (ForestFire forestFire : forestFires.values()) {
+            displayData(forestFire);
+       }
+    }
+
+    public static void displayData(List<ForestFire> forestFires) {
+        
+        for (ForestFire forestFire : forestFires) {
+            displayData(forestFire);
+       }
+    }
+
+    public static void displayData(ForestFire forestFire) {
+            System.out.print("ID: " + forestFire.getId() + " | ") ;
+            System.out.print("Month: " + forestFire.getMonth() + " | ");
+            System.out.print("Day: " + forestFire.getDay() + " | ");
+            System.out.println("RH: " + forestFire.getRh());
+            System.out.println("----------------------------------------------------");
+    }
+
+    public static ForestFire readForestFireInput(ForestFire ff) throws IOException {
+       String line = readSingleInput();
+       String[] split = StringUtils.splitPreserveAllTokens(line);
+       ff.setMonth(split[0]);
+       ff.setDay(split[1]);
+       ff.setRh(split[2]);
+       return ff;
+    }
+
+    public static ForestFire readNewInput() throws IOException {
+        String line = readSingleInput();
+       String[] split = StringUtils.splitPreserveAllTokens(line);
+       ForestFire ff = new ForestFire();
+       ff.setId(split[0]);
+       ff.setMonth(split[1]);
+       ff.setDay(split[2]);
+       ff.setRh(split[3]);
+       return ff;
     }
 }
