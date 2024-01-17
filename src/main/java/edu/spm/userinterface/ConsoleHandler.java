@@ -50,6 +50,13 @@ public class ConsoleHandler {
        }
     }
 
+    public static void displayData(List<ForestFire> forestFires) {
+        
+        for (ForestFire forestFire : forestFires) {
+            displayData(forestFire);
+       }
+    }
+
     public static void displayData(ForestFire forestFire) {
             System.out.print("ID: " + forestFire.getId() + " | ") ;
             System.out.print("Month: " + forestFire.getMonth() + " | ");

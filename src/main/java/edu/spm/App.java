@@ -6,14 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.interfaces.DHPrivateKey;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.spm.model.ForestFire;
 import edu.spm.repository.FileRepository;
+import edu.spm.service.Dataprocess;
 import edu.spm.userinterface.ConsoleHandler;
 
 /**
- * Hello world!
+ * Main application
  *
  */
 public class App 
@@ -24,9 +28,11 @@ public class App
         try {
             ConsoleHandler.printMessage( "Welcome to the console application! Choose the menu from the following options \n" +
              "1 . Read the File \n" + 
-             "2 . Edit items to the file \n " +
-             "3 . Add items to the file \n " +
-             "4 . Delete items to the file ");
+             "2 . Edit items to the file \n" +
+             "3 . Add items to the file \n" +
+             "4 . Delete items to the file\n" +
+             "5 . Analysis of the data\n" +
+             "6 . Filter data\n");
             String menuOption = ConsoleHandler.readMenuOption();
             switch (menuOption) {
                 case "1":
@@ -49,6 +55,7 @@ public class App
                     } else {
                         ConsoleHandler.printMessage("Update Failed for id: " + id);
                     }
+                    break;
                 case "3":
                     ConsoleHandler.printMessage("Enter id month day RH separated by space like: 31 jan mon 54");
                     newff = ConsoleHandler.readNewInput();
@@ -58,6 +65,7 @@ public class App
                     } else {
                         ConsoleHandler.printMessage("Adding new record failed . Try different id");
                     }
+                    break;
                  case "4":
                     ConsoleHandler.printMessage("Enter id of the record which should be deleted");
                     id = ConsoleHandler.readId();
@@ -78,9 +86,45 @@ public class App
                         ConsoleHandler.printMessage("Delete operation terminated");
                         
                     }
-                    
+                    break;
+                case "5": 
+                   Pair<Double, Double> stats =  Dataprocess.getAnalysis(instance.getForestFires());
+                   ConsoleHandler.printMessage("Mean of RH: " + stats.getLeft());
+                   ConsoleHandler.printMessage("Median of RH : " + stats.getRight());
 
+                    break;
+
+                case "6":
+                    ConsoleHandler.printMessage("On which fields do you want to filter the data?");
+                    ConsoleHandler.printMessage("1. RH \n " +                
+                    "2. Month \n" );
+                    String filterOption = ConsoleHandler.readMenuOption();
+                    if (filterOption.equalsIgnoreCase("1")) {
+                        ConsoleHandler.printMessage("Choose the operation: \n 1. > \n" + "2. < \n" );
+                        String operation = ConsoleHandler.readMenuOption();
+                        ConsoleHandler.printMessage("Enter " + " filter value: ( Should numeric)" );
+                        String filterValue = ConsoleHandler.readMenuOption();
+                        try {
+                            List<ForestFire> ff = Dataprocess.filterByRh(operation, filterValue, instance.getForestFires());
+                            ConsoleHandler.displayData(ff);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            ConsoleHandler.printMessage("Invalid Option" );
+                        }
+                    } else if (filterOption.equalsIgnoreCase("2")) {
+                        ConsoleHandler.printMessage("Enter month for filtering value" );
+                        String month = ConsoleHandler.readMenuOption();
+                        List<ForestFire> ff = Dataprocess.filterByMonth(month, instance.getForestFires());
+                        if (ff.size() == 0) {
+                            ConsoleHandler.printMessage("There are no values to display " );
+                        }
+                        ConsoleHandler.displayData(ff);
+                    } else {
+                        ConsoleHandler.printMessage("Invalid Option" );
+                    }
+                    break;
                 default:
+                    ConsoleHandler.printMessage("Invalid Option" );
                     break;
             }
         } catch (IOException e) {
