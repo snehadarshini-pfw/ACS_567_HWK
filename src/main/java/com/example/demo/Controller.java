@@ -16,7 +16,6 @@ public class Controller {
         
        return  payload.stream().mapToDouble(SprintPoint::getCompletedPoints).average().orElse(Double.NaN);
 
-       // return 1;
     }
 
     @PostMapping(value = "/team-effort-hour-capacity")
