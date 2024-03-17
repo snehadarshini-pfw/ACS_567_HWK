@@ -5,6 +5,14 @@ public class Developer {
     int pto;
     int ceremonies;
     TimeAvailable range;
+
+    
+    public Developer(String name, int pto, int ceremonies, TimeAvailable range) {
+        this.name = name;
+        this.pto = pto;
+        this.ceremonies = ceremonies;
+        this.range = range;
+    }
     public String getName() {
         return name;
     }

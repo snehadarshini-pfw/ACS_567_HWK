@@ -3,6 +3,12 @@ package com.example.demo;
 public class SprintPoint {
     Double completedPoints;
 
+    
+
+    public SprintPoint(Double completedPoints) {
+        this.completedPoints = completedPoints;
+    }
+
     public Double getCompletedPoints(){
         return completedPoints;
     }
