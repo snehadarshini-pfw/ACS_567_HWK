@@ -4,7 +4,9 @@ public class SprintPoint {
     Double completedPoints;
 
     
-
+    public SprintPoint() {
+        
+    }
     public SprintPoint(Double completedPoints) {
         this.completedPoints = completedPoints;
     }
